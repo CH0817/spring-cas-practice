@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>App</title>
+    <script th:src="@{/webjars/jquery/3.6.0/dist/jquery.min.js}"></script>
+</head>
+<body>
+<div>
+    <button onclick="test()">test</button>
+</div>
+<div>
+    <a th:href="@{/logout}">logout</a>
+</div>
+<script>
+    function test() {
+        $.ajax({
+            url: 'http://localhost:8888/test/principal',
+            type: 'POST',
+            success: (data) => {
+                console.info(data);
+            }
+        });
+    }
+</script>
+</body>
+</html>
