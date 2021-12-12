@@ -1,9 +1,12 @@
 package tw.com.rex.springcaspractice.config;
 
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.cas.ServiceProperties;
@@ -19,10 +22,13 @@ import org.springframework.security.core.userdetails.AuthenticationUserDetailsSe
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 
+@RequiredArgsConstructor
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    @Autowired
+    @Value("${server.port}")
+    private String port;
+    @NonNull
     private AuthenticationUserDetailsService<CasAssertionAuthenticationToken> userDetailsService;
 
     @Override
@@ -48,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public ServiceProperties serviceProperties() {
         ServiceProperties properties = new ServiceProperties();
-        properties.setService("http://localhost:8888/login/cas");
+        properties.setService("http://localhost:" + port + "/login/cas");
         properties.setSendRenew(false);
         return properties;
     }
@@ -82,7 +88,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     public LogoutFilter logoutFilter() {
         LogoutFilter logoutFilter = new LogoutFilter(
-                "http://localhost:8080/cas/logout?service=http://localhost:8888",
+                "http://localhost:8080/cas/logout?service=http://localhost:" + port,
                 new SecurityContextLogoutHandler());
         logoutFilter.setFilterProcessesUrl("/logout");
         return logoutFilter;
