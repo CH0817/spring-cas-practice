@@ -7,8 +7,12 @@
 </head>
 <body>
 <div>
+    <div th:text="'server port: ' + ${port}"></div>
     <div>
-        <button onclick="test()">test</button>
+        <button onclick="getApp1Principal()">get principal from app1</button>
+    </div>
+    <div>
+        <button onclick="getApp2Principal()">get principal from app2</button>
     </div>
     <div>
         <a th:href="@{http://localhost:8888}">go to APP1</a>
@@ -25,11 +29,22 @@
 
 </div>
 <script th:inline="javascript">
-    let port = [[${port}]];
+    // let port = [[${port}]];
 
-    function test() {
+    function getApp1Principal() {
         $.ajax({
-            url: 'http://localhost:' + port + '/test/principal',
+            url: 'http://localhost:8888/test/principal',
+            type: 'POST',
+            success: (data) => {
+                console.info(data);
+                $('#principalDiv').append('<p>' + JSON.stringify(data) + '</p>');
+            }
+        });
+    }
+
+    function getApp2Principal() {
+        $.ajax({
+            url: 'http://localhost:9999/test/principal',
             type: 'POST',
             success: (data) => {
                 console.info(data);
