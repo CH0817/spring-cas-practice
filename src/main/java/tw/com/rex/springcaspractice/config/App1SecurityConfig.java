@@ -2,11 +2,14 @@ package tw.com.rex.springcaspractice.config;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
+import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
@@ -88,6 +91,8 @@ public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
     public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setAuthenticationManager(authenticationManager());
+        filter.setProxyReceptorUrl("/login/cas/proxyreceptor");
+        filter.setProxyGrantingTicketStorage(proxyGrantingTicketStorage());
         return filter;
     }
 
@@ -110,8 +115,16 @@ public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
-        return new Cas20ServiceTicketValidator(casServerProperties.getPrefix());
+    public Cas20ProxyTicketValidator cas20ServiceTicketValidator() {
+        Cas20ProxyTicketValidator ticketValidator = new Cas20ProxyTicketValidator(casServerProperties.getPrefix());
+        ticketValidator.setProxyGrantingTicketStorage(proxyGrantingTicketStorage());
+        ticketValidator.setProxyCallbackUrl(casClientProperties.getPrefix() + "/login/cas/proxyreceptor");
+        return ticketValidator;
+    }
+
+    @Bean
+    public ProxyGrantingTicketStorage proxyGrantingTicketStorage() {
+        return new ProxyGrantingTicketStorageImpl();
     }
 
     @Bean
