@@ -3,7 +3,6 @@ package tw.com.rex.springcaspractice.config;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -110,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
-        return new Cas20ProxyTicketValidator(casServerProperties.getPrefix());
+        return new Cas20ServiceTicketValidator(casServerProperties.getPrefix());
     }
 
     @Bean
