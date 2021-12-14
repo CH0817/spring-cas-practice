@@ -6,6 +6,7 @@ import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
@@ -24,9 +25,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
+@Profile("app2")
 @RequiredArgsConstructor
 @Configuration
-public class SecurityConfig extends WebSecurityConfigurerAdapter {
+public class App2SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @NonNull
     private AuthenticationUserDetailsService<CasAssertionAuthenticationToken> userDetailsService;
