@@ -1,3 +1,12 @@
 spring:
   thymeleaf:
     cache: false
+cas:
+  server:
+    prefix: http://localhost:8080/cas
+    login: ${cas.server.prefix}/login
+    logout: ${cas.server.prefix}/logout
+  client:
+    prefix: http://localhost:${server.port}${server.servlet.context-path}
+    login: ${cas.client.prefix}/login/cas
+    logout: ${cas.client.prefix}/logout
