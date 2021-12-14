@@ -15,10 +15,10 @@
         <button onclick="getApp2Principal()">get principal from app2</button>
     </div>
     <div>
-        <a th:href="@{http://localhost:8888}">go to APP1</a>
+        <a th:href="@{http://localhost:8888/app1}">go to APP1</a>
     </div>
     <div>
-        <a th:href="@{http://localhost:9999}">go to APP2</a>
+        <a th:href="@{http://localhost:9999/app2}">go to APP2</a>
     </div>
     <div>
         <a th:href="@{/logout}">logout</a>
@@ -33,8 +33,9 @@
 
     function getApp1Principal() {
         $.ajax({
-            url: 'http://localhost:8888/test/principal',
+            url: 'http://localhost:8888/app1/test/principal',
             type: 'POST',
+            xhrFields: {withCredentials: true},
             success: (data) => {
                 console.info(data);
                 $('#principalDiv').append('<p>' + JSON.stringify(data) + '</p>');
@@ -44,8 +45,9 @@
 
     function getApp2Principal() {
         $.ajax({
-            url: 'http://localhost:9999/test/principal',
+            url: 'http://localhost:9999/app2/test/principal',
             type: 'POST',
+            xhrFields: {withCredentials: true},
             success: (data) => {
                 console.info(data);
                 $('#principalDiv').append('<p>' + JSON.stringify(data) + '</p>');
