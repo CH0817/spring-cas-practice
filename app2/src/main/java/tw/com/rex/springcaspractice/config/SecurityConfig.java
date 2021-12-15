@@ -2,19 +2,16 @@ package tw.com.rex.springcaspractice.config;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
-import org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
 import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
-import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
 import org.springframework.security.cas.web.CasAuthenticationEntryPoint;
 import org.springframework.security.cas.web.CasAuthenticationFilter;
+import org.springframework.security.cas.web.authentication.ServiceAuthenticationDetailsSource;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -28,10 +25,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-@Profile("app1")
 @RequiredArgsConstructor
 @Configuration
-public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @NonNull
     private AuthenticationUserDetailsService<CasAssertionAuthenticationToken> userDetailsService;
@@ -65,9 +61,7 @@ public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 允許跨域請求的 client url
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080",
-                                                      "http://localhost:8888",
-                                                      "http://localhost:9999"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:8888"));
         // 允許跨域請求的 method
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         // 允許跨域請求的 header
@@ -84,6 +78,7 @@ public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
         ServiceProperties properties = new ServiceProperties();
         properties.setService(casClientProperties.getLogin());
         properties.setSendRenew(false);
+        properties.setAuthenticateAllArtifacts(true);
         return properties;
     }
 
@@ -91,8 +86,8 @@ public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
     public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setAuthenticationManager(authenticationManager());
-        filter.setProxyReceptorUrl("/login/cas/proxyreceptor");
-        filter.setProxyGrantingTicketStorage(proxyGrantingTicketStorage());
+        filter.setServiceProperties(serviceProperties());
+        filter.setAuthenticationDetailsSource(new ServiceAuthenticationDetailsSource(serviceProperties()));
         return filter;
     }
 
@@ -117,14 +112,8 @@ public class App1SecurityConfig extends WebSecurityConfigurerAdapter {
     @Bean
     public Cas20ProxyTicketValidator cas20ServiceTicketValidator() {
         Cas20ProxyTicketValidator ticketValidator = new Cas20ProxyTicketValidator(casServerProperties.getPrefix());
-        ticketValidator.setProxyGrantingTicketStorage(proxyGrantingTicketStorage());
-        ticketValidator.setProxyCallbackUrl(casClientProperties.getPrefix() + "/login/cas/proxyreceptor");
+        ticketValidator.setAcceptAnyProxy(true);
         return ticketValidator;
-    }
-
-    @Bean
-    public ProxyGrantingTicketStorage proxyGrantingTicketStorage() {
-        return new ProxyGrantingTicketStorageImpl();
     }
 
     @Bean

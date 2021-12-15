@@ -2,11 +2,12 @@ package tw.com.rex.springcaspractice.config;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorage;
+import org.jasig.cas.client.proxy.ProxyGrantingTicketStorageImpl;
 import org.jasig.cas.client.session.SingleSignOutFilter;
-import org.jasig.cas.client.validation.Cas20ServiceTicketValidator;
+import org.jasig.cas.client.validation.Cas20ProxyTicketValidator;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Profile;
 import org.springframework.security.cas.ServiceProperties;
 import org.springframework.security.cas.authentication.CasAssertionAuthenticationToken;
 import org.springframework.security.cas.authentication.CasAuthenticationProvider;
@@ -25,10 +26,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
 
-@Profile("app2")
 @RequiredArgsConstructor
 @Configuration
-public class App2SecurityConfig extends WebSecurityConfigurerAdapter {
+public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @NonNull
     private AuthenticationUserDetailsService<CasAssertionAuthenticationToken> userDetailsService;
@@ -62,9 +62,7 @@ public class App2SecurityConfig extends WebSecurityConfigurerAdapter {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         // 允許跨域請求的 client url
-        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080",
-                                                      "http://localhost:8888",
-                                                      "http://localhost:9999"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:8080", "http://localhost:9999"));
         // 允許跨域請求的 method
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE"));
         // 允許跨域請求的 header
@@ -88,6 +86,8 @@ public class App2SecurityConfig extends WebSecurityConfigurerAdapter {
     public CasAuthenticationFilter casAuthenticationFilter() throws Exception {
         CasAuthenticationFilter filter = new CasAuthenticationFilter();
         filter.setAuthenticationManager(authenticationManager());
+        filter.setProxyReceptorUrl("/login/cas/proxyreceptor");
+        filter.setProxyGrantingTicketStorage(proxyGrantingTicketStorage());
         return filter;
     }
 
@@ -110,8 +110,16 @@ public class App2SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     @Bean
-    public Cas20ServiceTicketValidator cas20ServiceTicketValidator() {
-        return new Cas20ServiceTicketValidator(casServerProperties.getPrefix());
+    public Cas20ProxyTicketValidator cas20ServiceTicketValidator() {
+        Cas20ProxyTicketValidator ticketValidator = new Cas20ProxyTicketValidator(casServerProperties.getPrefix());
+        ticketValidator.setProxyGrantingTicketStorage(proxyGrantingTicketStorage());
+        ticketValidator.setProxyCallbackUrl(casClientProperties.getPrefix() + "/login/cas/proxyreceptor");
+        return ticketValidator;
+    }
+
+    @Bean
+    public ProxyGrantingTicketStorage proxyGrantingTicketStorage() {
+        return new ProxyGrantingTicketStorageImpl();
     }
 
     @Bean

@@ -7,12 +7,15 @@
 </head>
 <body>
 <div>
-    <div th:text="'server port: ' + ${port}"></div>
+    <H1>APP1</div>
     <div>
         <button onclick="getApp1Principal()">get principal from app1</button>
     </div>
     <div>
         <button onclick="getApp2Principal()">get principal from app2</button>
+    </div>
+    <div>
+        <button onclick="proxyToApp2()">proxy to app2</button>
     </div>
     <div>
         <a th:href="@{http://localhost:8888/app1}">go to APP1</a>
@@ -46,6 +49,18 @@
     function getApp2Principal() {
         $.ajax({
             url: 'http://localhost:9999/app2/test/principal',
+            type: 'POST',
+            xhrFields: {withCredentials: true},
+            success: (data) => {
+                console.info(data);
+                $('#principalDiv').append('<p>' + JSON.stringify(data) + '</p>');
+            }
+        });
+    }
+
+    function proxyToApp2() {
+        $.ajax({
+            url: 'http://localhost:8888/app1/test/proxy/app2/rex',
             type: 'POST',
             xhrFields: {withCredentials: true},
             success: (data) => {

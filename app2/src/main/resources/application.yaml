@@ -1,3 +1,7 @@
+server:
+  port: 9999
+  servlet:
+    context-path: /app2
 spring:
   thymeleaf:
     cache: false

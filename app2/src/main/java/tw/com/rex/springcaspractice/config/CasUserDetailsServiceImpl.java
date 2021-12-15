@@ -13,7 +13,7 @@ public class CasUserDetailsServiceImpl implements AuthenticationUserDetailsServi
 
     @Override
     public UserDetails loadUserDetails(CasAssertionAuthenticationToken token) throws UsernameNotFoundException {
-        return new User("rex",
+        return new User("app2",
                         "",
                         true,
                         true,
