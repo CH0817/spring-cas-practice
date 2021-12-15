@@ -8,24 +8,27 @@
 <body>
 <div>
     <H1>APP1</div>
-    <div>
-        <button onclick="getApp1Principal()">get principal from app1</button>
-    </div>
-    <div>
-        <button onclick="getApp2Principal()">get principal from app2</button>
-    </div>
-    <div>
-        <button onclick="proxyToApp2()">proxy to app2</button>
-    </div>
-    <div>
-        <a th:href="@{http://localhost:8888/app1}">go to APP1</a>
-    </div>
-    <div>
-        <a th:href="@{http://localhost:9999/app2}">go to APP2</a>
-    </div>
-    <div>
-        <a th:href="@{/logout}">logout</a>
-    </div>
+<div>
+    <button onclick="getApp1Principal()">get principal from app1</button>
+</div>
+<div>
+    <button onclick="getApp2Principal()">get principal from app2</button>
+</div>
+<div>
+    <button onclick="proxyToApp2()">proxy to app2</button>
+</div>
+<div>
+    <button onclick="proxyToApp2Again()">proxy to app2 again</button>
+</div>
+<div>
+    <a th:href="@{http://localhost:8888/app1}">go to APP1</a>
+</div>
+<div>
+    <a th:href="@{http://localhost:9999/app2}">go to APP2</a>
+</div>
+<div>
+    <a th:href="@{/logout}">logout</a>
+</div>
 </div>
 <hr>
 <div id="principalDiv">
@@ -59,8 +62,22 @@
     }
 
     function proxyToApp2() {
+        // 通
         $.ajax({
-            url: 'http://localhost:8888/app1/test/proxy/app2/rex',
+            url: 'http://localhost:8888/app1/test/proxy/rex',
+            type: 'POST',
+            xhrFields: {withCredentials: true},
+            success: (data) => {
+                console.info(data);
+                $('#principalDiv').append('<p>' + JSON.stringify(data) + '</p>');
+            }
+        });
+    }
+
+    function proxyToApp2Again() {
+        // TODO 不通，加 cache 設定會通？
+        $.ajax({
+            url: 'http://localhost:8888/app1/test/proxy/again/RexYu',
             type: 'POST',
             xhrFields: {withCredentials: true},
             success: (data) => {
